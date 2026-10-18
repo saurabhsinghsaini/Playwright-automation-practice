@@ -27,10 +27,10 @@ export default defineConfig({
   
   use: {
     /* Use the Chromium browser already installed on your PC */
-    launchOptions: {
-      executablePath:
-        'C:\\Users\\Saurabh Saini\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe',
-    },
+    // launchOptions: {
+    //   executablePath:
+    //     'C:\\Users\\Saurabh Saini\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe',
+    // },
 
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',

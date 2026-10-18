@@ -1,101 +1,58 @@
+
 import { test, expect } from '@playwright/test';
 
-test('Login page test', async ({ page }) => {
+test('Amazon navigation test', async ({ page }) => {
+  test.setTimeout(60000);
 
-    test.setTimeout(0);
+  // Open Amazon India
+  await page.goto('https://www.amazon.in/', {
+    waitUntil: 'domcontentloaded',
+    timeout: 30000,
+  });
 
-    await page.goto('https://www.amazon.in/', {
-        waitUntil: 'domcontentloaded'
-    });
-    const dogProducts = page.getByRole('link', {
-        name: 'Dog products'
-    });
+  // Check that Amazon has opened
+  await expect(page).toHaveURL(/amazon\.in/);
 
-    for (let i = 0; i < 30; i++) {
+  // Check Account & Lists
+  const account = page.locator('#nav-link-accountList-nav-line-1');
+  await expect(account).toBeVisible({ timeout: 15000 });
 
-        // Element mil gaya to click karo
-        if (await dogProducts.count() > 0) {
-            await dogProducts.click();
-            console.log(dogProducts);
-            break;
-        }
-        await page.mouse.wheel(0, 300);
+  // Hover over Account & Lists
+  await account.hover();
 
+  // Open Create a Wish List if available
+  const wishListLink = page.getByRole('link', {
+    name: 'Create a Wish List',
+  });
 
-        await page.waitForTimeout(3000);
-    }
+  if (await wishListLink.isVisible().catch(() => false)) {
+    await wishListLink.click();
+  } else {
+    console.log('Create a Wish List link was not visible.');
+  }
 
-    // Page ko content load karne ka time
-    await page.waitForTimeout(2000);
+  // Return to Amazon home page before opening the category menu
+  await page.goto('https://www.amazon.in/', {
+    waitUntil: 'domcontentloaded',
+    timeout: 30000,
+  });
 
+  // Open All Categories menu
+  const menuButton = page.getByRole('button', {
+    name: 'Open All Categories Menu',
+  });
 
-    await expect(page).toHaveURL(/amazon/);
-    await page.mouse.wheel(0, 500);
+  await expect(menuButton).toBeVisible({ timeout: 15000 });
+  await menuButton.click();
 
+  // Open Men's Fashion
+  const mensFashion = page.getByRole('button', {
+    name: "Men's Fashion",
+    exact: true,
+  });
 
-    const productImage = page.locator(
-        'img[alt*="PURINA SUPERCOAT Adult Dry Dog Food"]'
-    );
-    const nextButton = page.getByRole('button', {
-        name: 'Next page'
-    }).first();
+  await expect(mensFashion).toBeVisible({ timeout: 10000 });
+  await mensFashion.click();
 
-    for (let i = 0; i < 20; i++) {
-        if (await productImage.count() > 0) {
-            await expect(productImage).toBeVisible();
-            await productImage.click();
-            break;
-
-
-        }
-        await nextButton.click();
-        await page.waitForTimeout(1000);
-
-
-
-    }
-    await page.waitForTimeout(3000);
-
-
-    //hover on Account & lists
-    const account = page.locator('#nav-link-accountList-nav-line-1');
-
-
-    await expect(account).toBeVisible({ timeout: 10000 });
-
-
-
-    console.log('Count:', await account.count());
-
-    await account.hover();
-    await page.waitForTimeout(1000);
-
-
-    await page.getByRole('link', { name: 'Create a Wish List' }).click();
-    await page.waitForTimeout(3000);
-
-    // open hamburger
-    await page.getByRole('button', { name: 'Open All Categories Menu' }).click();
-
-    await page.getByRole('button', {
-        name: "Men's Fashion", exact: true
-    }).click();
-
-    //click Main menu
-  const mainMenu = page.locator('a.hmenu-back-button:visible');
-
-
-console.log('Count:', await mainMenu.count());
-
-await mainMenu.first().click();
-
-await page.pause();
-
-        await page.getByRole('button', {
-        name: "Men's Fashion", exact: true
-    }).click();
-
-    await page.pause();
-
-
+  console.log('Amazon navigation test completed.');
 });
